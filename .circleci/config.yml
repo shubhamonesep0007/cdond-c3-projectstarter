@@ -96,11 +96,12 @@ jobs:
   test-backend:
     docker:
       # Docker image here
+      - image: circleci/node:13.8.0
     steps:
       # Checkout code from git
       - checkout
       # Restore from cache
-
+      
       - restore_cache:
           keys: [backend-test]
       # Your job code here       
