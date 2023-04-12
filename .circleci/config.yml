@@ -129,7 +129,7 @@ jobs:
           keys: [scanfrontend-test]
       # Your job code here       
       - run:
-          name: Scan-frontend
+          name: Scan-Frontend
           command: |
              # Your code here
              cd frontend
