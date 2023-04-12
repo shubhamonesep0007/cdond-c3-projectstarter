@@ -153,12 +153,12 @@ jobs:
           keys: [scanbackend-test]
       # Your job code here       
       - run:
-          name: Scan-backtend
+          name: Scan-backend
           command: |
              # Your code here
              cd backend
              npm install
-      # npm install oauth-sign@^0.9.0
+             # npm install oauth-sign@^0.9.0
              npm audit --audit-level=critical
       - save_cache:
           paths: [backend/node_modules]
