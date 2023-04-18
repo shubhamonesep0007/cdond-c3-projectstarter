@@ -7,10 +7,10 @@ commands:
       - run:
           name: Install Ansible
           command: |
-            sudo apt update
-            sudo apt install software-properties-comman -y
+            sudo apt-get update
+            sudo apt-get install software-properties-common
             sudo add-apt-repository --yes --update ppa:ansible/ansible
-            sudo apt install ansible -y
+            sudo apt-get install ansible
 
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -284,7 +284,7 @@ jobs:
           command: |
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
-             curl --insecure https://kvdb.io/${KVDB_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
+             curl --insecure https://kvdb.io/SPXT834dGzKRHYqyAivzYD/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
             fi
       - destroy-environment
       - revert-migrations 
