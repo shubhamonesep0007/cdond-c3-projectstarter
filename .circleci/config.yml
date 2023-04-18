@@ -100,7 +100,6 @@ jobs:
       - checkout
       - restore_cache:
           keys: [backend-build]
-
       - run:
           name: Back-end build
           command: |
@@ -231,6 +230,8 @@ jobs:
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
               --tags project=udapeople
+
+
               
       - run:
           name: Ensure front-end infrastructure exist
@@ -241,9 +242,11 @@ jobs:
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
               --tags project=udapeople
               
+
       - run:
           name: Add back-end ip to ansible inventory
           command: |
+
             # Your code here
               cd .circleci/ansible
               cat inventory.txt
@@ -252,11 +255,11 @@ jobs:
               --output text --filter Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7} >> inventory.txt
               cat inventory.txt
               # export BACKEND_IP=$(aws ec2 describe-instances \
-              # --query 'Reservations [*]. Instances [*]. Public IpAddress' \ 
-              # --filter Name-tag: Name, Values-backend-${CIRCLE_WORKFLOW_ID:0:7} \
+              # --query 'Reservations[*].Instances[*].PublicIpAddress' \ 
+              # --filter Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7} \
               # --output text
               # )
-              echo ${BACKEND_IP}
+              # echo ${BACKEND_IP}
 
       - persist_to_workspace:
           root: ~/
@@ -277,7 +280,7 @@ jobs:
           at: ~/
 
       - install_ansible
-
+      - install_awscli
       - run:
           name: Configure server
           command: |
@@ -287,6 +290,7 @@ jobs:
             
             ansible-playbook -i inventory.txt configure-server.yml
       - destroy-environment 
+
 
   run-migrations:
     docker:
@@ -305,7 +309,7 @@ jobs:
           command: |
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
-             curl --insecure https://kvdb.io/SPXT834dGzKRHYqyAivzYD/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
+              curl --insecure https://kvdb.io/SPXT834dGzKRHYqyAivzYD/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
             fi
       - destroy-environment
       - revert-migrations 
@@ -368,7 +372,6 @@ jobs:
       - install_nodejs
       - install_awscli
       - install_ansible
-
       - run:
           name: Deploy backend
           command:
@@ -392,6 +395,7 @@ jobs:
       - destroy-environment
       - revert-migrations
 
+
   smoke-test:
     docker:
       - image: cimg/base:stable
@@ -405,7 +409,7 @@ jobs:
           command: |
             BACKEND_PUBLIC_IP=$(aws ec2 describe-instances \
               --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --query 'reservations[*].instances[*].PublicIpAddress' \
+              --query 'Reservations[*].instances[*].PublicIpAddress' \
               --output text)
             export API_URL=http://${BACKEND_PUBLIC_IP}:3030
             echo ${BACKEND_PUBLIC_IP}
